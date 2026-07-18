@@ -16,8 +16,18 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '20'
-    - run: npm install
-    - run: npm run lint
-    - run: npx tsc --noEmit
-    - run: npm run test
-    - run: npm run build
+    
+    - name: Build and Test Frontend
+      run: |
+        cd frontend
+        npm install
+        npm run lint
+        npm run build
+
+    - name: Build and Test Backend
+      run: |
+        cd backend
+        npm install
+        npx tsc --noEmit
+        npm run test
+        npm run build
