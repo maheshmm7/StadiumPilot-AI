@@ -374,7 +374,7 @@ export default function App() {
                           <h3 className="font-black tracking-wide">GenAI Optimization</h3>
                         </div>
                         
-                        <p className="text-slate-300 font-medium leading-relaxed mb-4 text-[13px] relative z-10">
+                        <p aria-live="polite" className="text-slate-300 font-medium leading-relaxed mb-4 text-[13px] relative z-10">
                           {routeData.aiSummary}
                         </p>
 
@@ -419,7 +419,7 @@ export default function App() {
                   </div>
                   {/* Predictive AI Digest */}
                   {digest ? (
-                    <div className="bg-[#30005C] rounded-2xl p-5 text-white shadow-xl relative overflow-hidden -mt-2">
+                    <div aria-live="polite" className="bg-[#30005C] rounded-2xl p-5 text-white shadow-xl relative overflow-hidden -mt-2">
                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#C00040] opacity-20 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
                        <div className="flex items-center gap-2 mb-4 relative z-10">
                          <LayoutDashboard className="w-5 h-5 text-[#CCFF00]" />

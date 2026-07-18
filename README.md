@@ -20,9 +20,19 @@ Navigating a massive stadium can be chaotic for fans and overwhelming for staff.
 ### 🧠 Approach and Logic
 The logic revolves around real-time spatial awareness combined with Generative AI reasoning. Rather than hard-coding static routes, the system feeds live contextual data (crowd levels at specific gates, maintenance incidents, weather conditions) directly to a Large Language Model (Gemini Pro). The AI then dynamically evaluates these parameters against the user's constraints (e.g., needing step-free accessible routing) to produce the most logical, safest, and fastest route.
 
-### 🌟 Core Problem It Solves
-- **For Fans:** Prevents getting lost, finds the fastest route to seats, locates the nearest restrooms/food, and identifies accessible (wheelchair-friendly) paths.
-- **For Staff/Security:** Monitors crowd congestion, tracks gate capacities, and generates intelligent operational digests (e.g., "Gate A is congested, reroute staff to Gate B").
+### 🌟 Explicit Personas & The Core Problem It Solves
+
+#### Persona 1: The Match Attendee (Fan)
+**Goal:** Reach their seat efficiently, find amenities (food/restrooms), and enjoy the event without getting lost or stuck in massive crowds.
+**Solution:** StadiumPilot provides real-time, AI-generated routing to their specific gate, bypassing congested areas, and dynamically recalculating if an incident occurs.
+
+#### Persona 2: The Stadium Operations Director (Staff)
+**Goal:** Maintain safety, prevent bottlenecks, respond to incidents instantly, and optimize crowd flow across the entire venue.
+**Solution:** StadiumPilot provides an Operations Digest powered by GenAI that instantly flags critical alerts (e.g., medical incidents or high crowd density) and gives actionable recommendations to deploy resources effectively.
+
+#### Persona 3: Accessibility-Required Visitor (Wheelchair User)
+**Goal:** Navigate the stadium safely without encountering stairs, steep inclines, or blocked paths.
+**Solution:** StadiumPilot specifically factors in a `needsWheelchair` parameter, generating step-free, accessible routes and ensuring the visitor does not get routed through stair-only concourses.
 
 ### 📋 Assumptions Made
 - **Connectivity:** Assumes attendees and staff have active internet connections to receive live route updates.
