@@ -15,9 +15,9 @@ describe('App', () => {
     expect(screen.getByText('StadiumPilot')).toBeInTheDocument();
   });
 
-  it('renders the chat input', () => {
+  it('renders the accessibility toggle', () => {
     render(<App />);
-    const input = screen.getByPlaceholderText(/Ask about navigation/i);
-    expect(input).toBeInTheDocument();
+    const checkbox = screen.getByRole('checkbox', { name: /accessible route needed/i });
+    expect(checkbox).toBeInTheDocument();
   });
 });

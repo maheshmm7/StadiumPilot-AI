@@ -4,6 +4,11 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+// Simple in-memory cache for efficiency
+const routeCache = new Map<string, { data: any; timestamp: number }>();
+let digestCache: { data: any; timestamp: number } | null = null;
+const CACHE_TTL_MS = 60 * 1000; // 1 minute cache
+
 export class AIService {
   static async getStadiumContext(): Promise<string> {
     const zones = await prisma.stadiumZone.findMany({
@@ -24,6 +29,13 @@ export class AIService {
   }
 
   static async generateRoute(destination: string, needsWheelchair: boolean, startLocation: string = "Main Entrance"): Promise<any> {
+    const cacheKey = `${startLocation}-${destination}-${needsWheelchair}`;
+    const cached = routeCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      console.log(`[Cache Hit] Route: ${cacheKey}`);
+      return cached.data;
+    }
+
     const liveContext = await this.getStadiumContext();
     
     const systemInstruction = `You are the FIFA World Cup 2026 Smart Stadium Routing Engine. 
@@ -88,7 +100,9 @@ Needs Wheelchair Access: ${needsWheelchair}`;
       });
 
       const aiText = response.text || "{}";
-      return JSON.parse(aiText);
+      const result = JSON.parse(aiText);
+      routeCache.set(cacheKey, { data: result, timestamp: Date.now() });
+      return result;
     } catch (error: any) {
       console.error('Error in AI Service:', error);
       
@@ -123,15 +137,22 @@ Needs Wheelchair Access: ${needsWheelchair}`;
       }
 
       console.log(`Using fallback mock route for ${startLocation} -> ${destination}...`);
-      return {
+      const fallbackResult = {
         optimalRoute: fallbackRoute,
         eta: "12 mins",
         aiSummary: `Fallback Route: Directing to ${destination} via standard concourses. (GenAI API currently overloaded).`
       };
+      // Do not cache fallback results deeply, or maybe cache for just 10s to prevent spamming
+      return fallbackResult;
     }
   }
 
   static async generateOperationsDigest(): Promise<any> {
+    if (digestCache && Date.now() - digestCache.timestamp < CACHE_TTL_MS) {
+      console.log(`[Cache Hit] Digest`);
+      return digestCache.data;
+    }
+
     const liveContext = await this.getStadiumContext();
     
     const systemInstruction = `You are the Head of Operations AI for the FIFA World Cup 2026. 
@@ -169,7 +190,9 @@ ${liveContext}`;
         }
       });
       const aiText = response.text || "{}";
-      return JSON.parse(aiText);
+      const result = JSON.parse(aiText);
+      digestCache = { data: result, timestamp: Date.now() };
+      return result;
     } catch (error: any) {
       console.error('Error in digest generation:', error);
       // Fallback for demo if API hits quota limits (429) or overloading (503)
