@@ -25,6 +25,8 @@ jobs:
         npm run build
 
     - name: Build and Test Backend
+      env:
+        DATABASE_URL: "file:./dev.db"
       run: |
         cd backend
         npm install
