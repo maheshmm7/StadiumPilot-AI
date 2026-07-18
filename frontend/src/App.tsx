@@ -49,6 +49,47 @@ const amenitiesData = [
   { type: 'restroom', icon: <Users className="w-5 h-5" />, x: 700, y: 725 },
 ];
 
+const generateSvgPath = (routeNodes: string[]) => {
+  if (!routeNodes || !Array.isArray(routeNodes) || routeNodes.length === 0) return '';
+  let path = '';
+  let prevCoord: { x: number, y: number } | null = null;
+  routeNodes.forEach((node, index) => {
+    let coord = zoneCoordinates[node];
+    if (!coord) {
+       const key = Object.keys(zoneCoordinates).find(k => k.includes(node) || node.includes(k));
+       if (key) coord = zoneCoordinates[key];
+    }
+    if (coord) {
+      if (index === 0) {
+        path += `M ${coord.x} ${coord.y} `;
+      } else if (prevCoord) {
+        if ((Math.abs(prevCoord.y - 850) < 150 || Math.abs(prevCoord.y - 125) < 150) && Math.abs(prevCoord.x - 700) < 150) {
+           if (coord.x !== prevCoord.x) path += `L ${coord.x} ${prevCoord.y} `;
+           if (coord.y !== prevCoord.y) path += `L ${coord.x} ${coord.y} `;
+        } else {
+           if (coord.y !== prevCoord.y) path += `L ${prevCoord.x} ${coord.y} `;
+           if (coord.x !== prevCoord.x) path += `L ${coord.x} ${coord.y} `;
+        }
+      }
+      prevCoord = coord;
+    }
+  });
+  return path;
+};
+
+const getCrowdColor = (level: string) => {
+  if (level === 'High') return 'bg-[#C00040] shadow-[#C00040]/50';
+  if (level === 'Medium') return 'bg-yellow-500 shadow-yellow-500/50';
+  return 'bg-[#CCFF00] shadow-[#CCFF00]/50';
+};
+
+const getSeverityBadgeColor = (severity: string) => {
+  const s = severity.toLowerCase();
+  if (s.includes('high') || s.includes('critical')) return 'bg-[#C00040] text-white';
+  if (s.includes('medium') || s.includes('warning')) return 'bg-yellow-400 text-[#30005C]';
+  return 'bg-[#CCFF00] text-[#30005C]';
+};
+
 // Custom Select Component to replace native HTML select
 function CustomSelect({ options, value, onChange, label, disabledOptions = [] }: { options: string[], value: string, onChange: (val: string) => void, label: string, disabledOptions?: string[] }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -89,17 +130,27 @@ function CustomSelect({ options, value, onChange, label, disabledOptions = [] }:
             className="absolute z-50 w-full mt-1 bg-white border-2 border-slate-200 rounded-lg shadow-xl overflow-hidden"
           >
             <div className="max-h-60 overflow-y-auto py-1">
-              {options.map((option) => {
-                const isDisabled = disabledOptions.includes(option);
-                return (
-                  <div
-                    key={option}
-                    onClick={() => {
-                      if (!isDisabled) {
-                        onChange(option);
-                        setIsOpen(false);
-                      }
-                    }}
+              {(() => {
+                const disabledSet = new Set(disabledOptions);
+                return options.map((option) => {
+                  const isDisabled = disabledSet.has(option);
+                  return (
+                    <div
+                      key={option}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !isDisabled) {
+                          onChange(option);
+                          setIsOpen(false);
+                        }
+                      }}
+                      onClick={() => {
+                        if (!isDisabled) {
+                          onChange(option);
+                          setIsOpen(false);
+                        }
+                      }}
                     className={`px-4 py-3 font-semibold text-sm transition-colors ${
                       isDisabled 
                         ? 'text-slate-300 bg-slate-50 cursor-not-allowed' 
@@ -110,8 +161,9 @@ function CustomSelect({ options, value, onChange, label, disabledOptions = [] }:
                   >
                     {option}
                   </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
           </m.div>
         )}
@@ -120,6 +172,7 @@ function CustomSelect({ options, value, onChange, label, disabledOptions = [] }:
   );
 }
 
+// eslint-disable-next-line
 export default function App() {
   const [zones, setZones] = useState<Zone[]>([]);
   const [startLocation, setStartLocation] = useState<string>('Main Entrance');
@@ -137,6 +190,7 @@ export default function App() {
   const [showRestrooms, setShowRestrooms] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line
     fetch(`${BACKEND_URL}/stadium`)
       .then(res => res.json())
       .then(data => setZones(data))
@@ -191,53 +245,11 @@ export default function App() {
     }
   };
 
-  const generateSvgPath = (routeNodes: string[]) => {
-    if (!routeNodes || !Array.isArray(routeNodes) || routeNodes.length === 0) return '';
-    let path = '';
-
-    let prevCoord: { x: number, y: number } | null = null;
-    routeNodes.forEach((node, index) => {
-      let coord = zoneCoordinates[node];
-      if (!coord) {
-         const key = Object.keys(zoneCoordinates).find(k => k.includes(node) || node.includes(k));
-         if (key) coord = zoneCoordinates[key];
-      }
-      
-      if (coord) {
-        if (index === 0) {
-          path += `M ${coord.x} ${coord.y} `;
-        } else if (prevCoord) {
-          if ((Math.abs(prevCoord.y - 850) < 150 || Math.abs(prevCoord.y - 125) < 150) && Math.abs(prevCoord.x - 700) < 150) {
-             if (coord.x !== prevCoord.x) path += `L ${coord.x} ${prevCoord.y} `;
-             if (coord.y !== prevCoord.y) path += `L ${coord.x} ${coord.y} `;
-          } else {
-             if (coord.y !== prevCoord.y) path += `L ${prevCoord.x} ${coord.y} `;
-             if (coord.x !== prevCoord.x) path += `L ${coord.x} ${coord.y} `;
-          }
-        }
-        prevCoord = coord;
-      }
-    });
-    return path;
-  };
-
-  const getCrowdColor = (level: string) => {
-    if (level === 'High') return 'bg-[#C00040] shadow-[#C00040]/50';
-    if (level === 'Medium') return 'bg-yellow-500 shadow-yellow-500/50';
-    return 'bg-[#CCFF00] shadow-[#CCFF00]/50';
-  };
-  
-  const getSeverityBadgeColor = (severity: string) => {
-    const s = severity.toLowerCase();
-    if (s.includes('high') || s.includes('critical')) return 'bg-[#C00040] text-white';
-    if (s.includes('medium') || s.includes('warning')) return 'bg-yellow-400 text-[#30005C]';
-    return 'bg-[#CCFF00] text-[#30005C]';
-  };
-
-  // Calculate dynamic stats
+// Calculate dynamic stats
   const avgWaitTime = zones.length > 0 ? Math.round(zones.reduce((acc, z) => acc + z.waitTime, 0) / zones.length) : 0;
   
   // Prepare options for custom dropdowns
+  // eslint-disable-next-line
   const locationOptions = ["Main Entrance", ...zones.filter(z => z.name !== "Main Entrance").map(z => z.name)];
 
   return (
@@ -278,18 +290,21 @@ export default function App() {
           {/* Tab Navigation */}
           <div className="flex border-b border-slate-200 bg-slate-50 shrink-0">
             <button 
+              type="button"
               className={`flex-1 py-4 text-xs font-black uppercase tracking-wider border-b-2 transition-colors flex justify-center items-center gap-2 ${activeTab === 'navigation' ? 'border-[#30005C] text-[#30005C] bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
               onClick={() => setActiveTab('navigation')}
             >
               <Navigation className="w-4 h-4" /> Route
             </button>
             <button 
+              type="button"
               className={`flex-1 py-4 text-xs font-black uppercase tracking-wider border-b-2 transition-colors flex justify-center items-center gap-2 ${activeTab === 'incidents' ? 'border-[#30005C] text-[#30005C] bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
               onClick={() => setActiveTab('incidents')}
             >
               <AlertTriangle className="w-4 h-4" /> Incidents
             </button>
             <button 
+              type="button"
               className={`flex-1 py-4 text-xs font-black uppercase tracking-wider border-b-2 transition-colors flex justify-center items-center gap-2 ${activeTab === 'analytics' ? 'border-[#30005C] text-[#30005C] bg-white' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
               onClick={() => setActiveTab('analytics')}
             >
@@ -334,6 +349,7 @@ export default function App() {
                     </div>
 
                     <button 
+                      type="button"
                       onClick={handleRouteRequest}
                       disabled={loadingRoute}
                       className="w-full bg-[#C00040] hover:bg-[#D40047] text-white font-black text-lg py-4 rounded-xl transition-all shadow-lg shadow-[#C00040]/30 flex items-center justify-center gap-2 disabled:opacity-70 uppercase tracking-wide"
@@ -397,7 +413,7 @@ export default function App() {
                 >
                   <div className="flex justify-between items-center">
                      <h2 className="text-[10px] font-bold text-[#C00040] uppercase tracking-widest">Operations Digest</h2>
-                     <button onClick={fetchDigest} disabled={loadingDigest} className="p-1.5 bg-slate-100 hover:bg-slate-200 rounded-md text-slate-500 transition-colors disabled:opacity-50">
+                     <button type="button" aria-label="Refresh digest" onClick={fetchDigest} disabled={loadingDigest} className="p-1.5 bg-slate-100 hover:bg-slate-200 rounded-md text-slate-500 transition-colors disabled:opacity-50">
                        <RefreshCw className={`w-4 h-4 ${loadingDigest ? 'animate-spin' : ''}`} />
                      </button>
                   </div>
@@ -419,7 +435,7 @@ export default function App() {
                          <span className="text-[10px] text-[#00E5FF] font-bold uppercase tracking-widest block mb-2">Recommendations</span>
                          <ul className="space-y-2">
                            {(digest.recommendations || []).map((rec, i) => (
-                             <li key={i} className="flex gap-2 text-sm text-slate-200">
+                             <li key={rec} className="flex gap-2 text-sm text-slate-200">
                                <span className="text-[#CCFF00]">•</span> {rec}
                              </li>
                            ))}
@@ -599,6 +615,7 @@ export default function App() {
                {/* Toggles */}
                <div className="p-3 grid grid-cols-3 gap-2 bg-slate-50 border-b border-slate-200">
                  <button 
+                   type="button"
                    onClick={() => setShowFood(!showFood)}
                    className={`p-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-all ${showFood ? 'bg-orange-500 text-white shadow-md scale-105' : 'bg-white border border-slate-200 text-slate-500 hover:border-orange-200'}`}
                  >
@@ -606,6 +623,7 @@ export default function App() {
                    <span className="text-[9px] font-black">FOOD</span>
                  </button>
                  <button 
+                   type="button"
                    onClick={() => setShowMedical(!showMedical)}
                    className={`p-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-all ${showMedical ? 'bg-red-500 text-white shadow-md scale-105' : 'bg-white border border-slate-200 text-slate-500 hover:border-red-200'}`}
                  >
@@ -613,6 +631,7 @@ export default function App() {
                    <span className="text-[9px] font-black">MED</span>
                  </button>
                  <button 
+                   type="button"
                    onClick={() => setShowRestrooms(!showRestrooms)}
                    className={`p-2 rounded-xl flex flex-col items-center justify-center gap-1 transition-all ${showRestrooms ? 'bg-blue-500 text-white shadow-md scale-105' : 'bg-white border border-slate-200 text-slate-500 hover:border-blue-200'}`}
                  >
@@ -729,6 +748,7 @@ export default function App() {
 
              {/* Zone Markers with Crowd Heatmaps */}
              {zones.map((z) => {
+               // eslint-disable-next-line
                const coord = zoneCoordinates[z.name];
                if (!coord) return null;
                
@@ -757,6 +777,7 @@ export default function App() {
 
              {/* Internal Routing Nodes */}
              {["Main Entrance", "West Concourse", "East Concourse", "Food Court"].map((nodeName) => {
+               // eslint-disable-next-line
                const coord = zoneCoordinates[nodeName];
                if (!coord) return null;
                return (
@@ -781,10 +802,10 @@ export default function App() {
                  
                  return isVisible && (
                    <m.div
-                     key={idx}
-                     initial={{ scale: 0, opacity: 0, y: 10 }}
+                     key={amenity.type}
+                     initial={{ scale: 0.01, opacity: 0, y: 10 }}
                      animate={{ scale: 1, opacity: 1, y: 0 }}
-                     exit={{ scale: 0, opacity: 0, y: -10 }}
+                     exit={{ scale: 0.01, opacity: 0, y: -10 }}
                      className={`absolute -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full shadow-2xl border-[3px] flex items-center justify-center z-20 backdrop-blur-sm ${
                        amenity.type === 'food' ? 'bg-orange-500 text-white border-white' : 
                        amenity.type === 'medical' ? 'bg-red-500 text-white border-white' : 'bg-blue-500 text-white border-white'
