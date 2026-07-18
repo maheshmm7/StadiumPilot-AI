@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "prisma db push && npx tsx prisma/seed.ts && prisma generate && npx tsc",
+    "build": "npx prisma db push && npx tsx prisma/seed.ts && npx prisma generate && npx tsc",
     "dev": "tsx src/server.ts",
     "start": "node dist/server.js",
     "test": "vitest run",
