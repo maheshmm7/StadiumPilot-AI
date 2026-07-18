@@ -46,10 +46,9 @@ export function CustomSelect({ options, value, onChange, label, disabledOptions 
                 return options.map((option) => {
                   const isDisabled = disabledSet.has(option);
                   return (
-                    <div
+                    <button
                       key={option}
-                      role="button"
-                      tabIndex={0}
+                      type="button"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !isDisabled) {
                           onChange(option);
@@ -62,7 +61,7 @@ export function CustomSelect({ options, value, onChange, label, disabledOptions 
                           setIsOpen(false);
                         }
                       }}
-                    className={`px-4 py-3 font-semibold text-sm transition-colors ${
+                    className={`w-full text-left px-4 py-3 font-semibold text-sm transition-colors ${
                       isDisabled 
                         ? 'text-slate-300 bg-slate-50 cursor-not-allowed' 
                         : value === option
@@ -71,7 +70,7 @@ export function CustomSelect({ options, value, onChange, label, disabledOptions 
                     }`}
                   >
                     {option}
-                  </div>
+                  </button>
                   );
                 });
               })()}

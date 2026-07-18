@@ -1,12 +1,13 @@
-/* react-doctor-disable */
+
 import { useState, useEffect } from 'react';
 import { 
   MapPin, Navigation, AlertTriangle, ShieldCheck, 
   Loader2, Zap, Users, ThermometerSun, 
-  Coffee, Crosshair, BarChart3, LayoutDashboard, RefreshCw 
+  Coffee, Crosshair, BarChart3, RefreshCw 
 } from 'lucide-react';
-import { m, LazyMotion, domAnimation, AnimatePresence } from 'framer-motion';
 import { CustomSelect } from './CustomSelect';
+import { OperationsDigest } from './OperationsDigest';
+import { m, LazyMotion, domAnimation, AnimatePresence } from 'framer-motion';
 import './index.css';
 
 interface Zone {
@@ -110,13 +111,15 @@ export default function App() {
   const [showMedical, setShowMedical] = useState(false);
   const [showRestrooms, setShowRestrooms] = useState(false);
 
-  useEffect(() => {
-    // eslint-disable-next-line
+  const fetchStadiumData = () => {
     fetch(`${BACKEND_URL}/stadium`)
       .then(res => res.json())
       .then(data => setZones(data))
       .catch(console.error);
-      
+  };
+
+  useEffect(() => {
+    fetchStadiumData();
     fetchDigest();
   }, []);
 
@@ -262,7 +265,19 @@ export default function App() {
                       />
                     </div>
 
-                    <div className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors mt-2" onClick={() => setNeedsWheelchair(!needsWheelchair)}>
+                    <div 
+                      role="checkbox"
+                      aria-checked={needsWheelchair}
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setNeedsWheelchair(!needsWheelchair);
+                        }
+                      }}
+                      className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-100 transition-colors mt-2" 
+                      onClick={() => setNeedsWheelchair(!needsWheelchair)}
+                    >
                       <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${needsWheelchair ? 'bg-[#30005C] border-[#30005C]' : 'bg-white border-slate-300'}`}>
                         {needsWheelchair && <ShieldCheck className="w-3 h-3 text-white" />}
                       </div>
@@ -339,35 +354,7 @@ export default function App() {
                      </button>
                   </div>
                   {/* Predictive AI Digest */}
-                  {digest ? (
-                    <div aria-live="polite" className="bg-[#30005C] rounded-2xl p-5 text-white shadow-xl relative overflow-hidden -mt-2">
-                       <div className="absolute top-0 right-0 w-32 h-32 bg-[#C00040] opacity-20 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
-                       <div className="flex items-center gap-2 mb-4 relative z-10">
-                         <LayoutDashboard className="w-5 h-5 text-[#CCFF00]" />
-                         <h3 className="font-black tracking-wide">GenAI Analysis</h3>
-                       </div>
-                       
-                       <div className="mb-4 relative z-10">
-                         <span className="text-[10px] text-[#00E5FF] font-bold uppercase tracking-widest block mb-1">Critical Alert</span>
-                         <p className="font-semibold text-white bg-[#C00040] p-3 rounded-lg shadow-inner">{digest.criticalAlert}</p>
-                       </div>
-
-                       <div className="relative z-10">
-                         <span className="text-[10px] text-[#00E5FF] font-bold uppercase tracking-widest block mb-2">Recommendations</span>
-                         <ul className="space-y-2">
-                           {(digest.recommendations || []).map((rec) => (
-                             <li key={rec} className="flex gap-2 text-sm text-slate-200">
-                               <span className="text-[#CCFF00]">•</span> {rec}
-                             </li>
-                           ))}
-                         </ul>
-                       </div>
-                    </div>
-                  ) : loadingDigest ? (
-                    <div className="bg-slate-100 rounded-2xl p-8 flex justify-center items-center -mt-2">
-                      <Loader2 className="w-8 h-8 text-[#30005C] animate-spin" />
-                    </div>
-                  ) : null}
+                  <OperationsDigest digest={digest} loadingDigest={loadingDigest} />
 
                   <section className="space-y-3">
                      <h2 className="text-[10px] font-bold text-[#C00040] uppercase tracking-widest">Live Incident Feed</h2>
@@ -770,8 +757,12 @@ export default function App() {
                     const targetNode = lastNode || destination;
                     let endCoord = zoneCoordinates[targetNode];
                     if (!endCoord) {
-                       const key = Object.keys(zoneCoordinates).find(k => k.includes(targetNode) || targetNode.includes(k));
-                       if (key) endCoord = zoneCoordinates[key];
+                       for (const k in zoneCoordinates) {
+                         if (k.indexOf(targetNode) !== -1 || targetNode.indexOf(k) !== -1) {
+                           endCoord = zoneCoordinates[k];
+                           break;
+                         }
+                       }
                     }
                     
                     if (endCoord) {
