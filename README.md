@@ -14,9 +14,20 @@ StadiumPilot AI is a comprehensive, full-stack application designed to revolutio
 
 Navigating a massive stadium can be chaotic for fans and overwhelming for staff. StadiumPilot solves this by combining **interactive, real-time venue mapping** with **Generative AI** to provide instant, dynamic answers to operational questions.
 
+### 🎯 Chosen Vertical
+**Smart City / Event Management & Infrastructure**
+
+### 🧠 Approach and Logic
+The logic revolves around real-time spatial awareness combined with Generative AI reasoning. Rather than hard-coding static routes, the system feeds live contextual data (crowd levels at specific gates, maintenance incidents, weather conditions) directly to a Large Language Model (Gemini Pro). The AI then dynamically evaluates these parameters against the user's constraints (e.g., needing step-free accessible routing) to produce the most logical, safest, and fastest route.
+
 ### 🌟 Core Problem It Solves
 - **For Fans:** Prevents getting lost, finds the fastest route to seats, locates the nearest restrooms/food, and identifies accessible (wheelchair-friendly) paths.
 - **For Staff/Security:** Monitors crowd congestion, tracks gate capacities, and generates intelligent operational digests (e.g., "Gate A is congested, reroute staff to Gate B").
+
+### 📋 Assumptions Made
+- **Connectivity:** Assumes attendees and staff have active internet connections to receive live route updates.
+- **Sensor Data:** Assumes stadium gates and zones are equipped with crowd-counting sensors (simulated in our SQLite database) that feed real-time density data to the backend.
+- **Scale:** The SVG map is a simplified representation of a massive complex. Real-world implementation would require multi-floor pathing arrays.
 
 ---
 
