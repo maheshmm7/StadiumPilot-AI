@@ -29,7 +29,7 @@ interface DigestData {
   recommendations: string[];
 }
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || '/api';
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 const zoneCoordinates: Record<string, { x: number, y: number }> = {
   "Main Entrance": { x: 700, y: 825 },
