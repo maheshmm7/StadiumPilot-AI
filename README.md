@@ -1,50 +1,99 @@
-# StadiumPilot 2026
+# StadiumPilot AI 🏟️🤖
 
-![StadiumPilot Banner](https://via.placeholder.com/1200x400/2563eb/ffffff?text=StadiumPilot+2026)
+<div align="center">
+  <img src="https://images.unsplash.com/photo-1577223625816-75b6f092301f?q=80&w=1200&h=300&fit=crop" alt="Stadium Banner" style="border-radius: 12px; margin-bottom: 20px;"/>
+  <br/>
+  <h3>An intelligent, AI-powered copilot for modern stadium operations and fan experience.</h3>
+</div>
 
-> An intelligent, AI-powered copilot for FIFA World Cup 2026 stadium operations.
+---
 
-StadiumPilot 2026 is a web application that leverages advanced AI to provide real-time, domain-specific operations assistance, optimal routing, and crowd intelligence for stadium staff and fans.
+## 📖 What is StadiumPilot AI?
 
-## Features
+StadiumPilot AI is a comprehensive, full-stack application designed to revolutionize how massive venues (like stadiums for the FIFA World Cup) manage crowds, route attendees, and streamline operations. 
 
-- **🗺️ Interactive Map Navigation**: Real-time visual routing across stadium sections with accessibility-aware paths.
-- **👥 Crowd Intelligence**: Congestion monitoring and real-time wait time updates.
-- **🤖 GenAI Operations Digest**: Predictive operational insights powered by Google Gemini.
-- **♿ Accessibility Assistant**: Specialized mapping for wheelchairs and accessible routes.
+Navigating a massive stadium can be chaotic for fans and overwhelming for staff. StadiumPilot solves this by combining **interactive, real-time venue mapping** with **Generative AI** to provide instant, dynamic answers to operational questions.
 
-## Architecture
+### 🌟 Core Problem It Solves
+- **For Fans:** Prevents getting lost, finds the fastest route to seats, locates the nearest restrooms/food, and identifies accessible (wheelchair-friendly) paths.
+- **For Staff/Security:** Monitors crowd congestion, tracks gate capacities, and generates intelligent operational digests (e.g., "Gate A is congested, reroute staff to Gate B").
 
-StadiumPilot is structured as a monorepo containing a decoupled frontend and backend:
+---
 
-- **Frontend**: A lightning-fast React Single Page Application (SPA) built with Vite and styled with Tailwind CSS. It features complex interactive SVG stadium maps and fluid animations via Framer Motion.
-- **Backend**: A robust Node.js API built with Express, featuring Prisma for database management (SQLite) and Zod for strict payload validation.
-- **AI Integration**: The backend integrates the `@google/genai` SDK to dynamically calculate routes and generate operational digests based on live stadium context.
+## 🚀 How It Works
 
-## Tech Stack
+StadiumPilot AI is built on a decoupled **Monorepo Architecture**, separating the visual interface from the AI processing engine.
 
-- **Frontend**: Vite, React 19, Tailwind CSS, Framer Motion
-- **Backend**: Node.js, Express, Prisma (SQLite), `@google/genai`
-- **Validation**: Zod
-- **Testing**: Vitest
-- **Typing**: Strict TypeScript
+### 1. The Interactive Frontend (React + Vite)
+- The user interface features a massive, interactive SVG map of a stadium.
+- Users can click on specific zones (e.g., "Main Entrance", "Medical Tent", "VIP Lounge").
+- The UI dynamically renders **Framer Motion** powered routes (animated lines) showing exactly how to get from point A to point B.
 
-## Getting Started
+### 2. The AI Backend (Node + Express + Gemini)
+- The backend serves as the brain of the operation. 
+- It uses the **Google Gemini Pro AI** to act as a "Stadium Operations Director". 
+- When a user asks a question or views a zone, the backend feeds real-time context (weather, gate capacity, current alerts) into the Gemini AI. The AI then generates a highly accurate, structured JSON response detailing recommendations, alerts, and crowd control measures.
 
-The project requires running both the backend and frontend concurrently.
+---
 
-### Backend Setup
-1. `cd backend`
-2. `npm install`
-3. Copy `.env.example` to `.env` and add your `GEMINI_API_KEY`.
-4. `npm run dev` (Runs the API on port 3001)
+## 🛠️ Tech Stack
 
-### Frontend Setup
-1. `cd frontend`
-2. `npm install`
-3. Copy `.env.example` to `.env` (Sets `VITE_API_URL` to point to the backend).
-4. `npm run dev` (Runs the UI on port 5173/5174)
+- **Frontend:** Vite, React 19, Tailwind CSS, Framer Motion, Lucide Icons.
+- **Backend:** Node.js, Express, Prisma (SQLite Database), Google `@google/genai` SDK.
+- **Validation & Quality:** Zod (Schema Validation), Vitest (Testing), Oxlint.
 
-## License
+---
 
-MIT License © 2026 StadiumPilot AI
+## 💻 How to Run the Project Locally
+
+Because this is a decoupled architecture, you must run both the backend API and the frontend UI concurrently.
+
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn
+- A Google Gemini API Key
+
+### Step 1: Start the Backend (AI Engine)
+Open a terminal and run the following commands:
+```bash
+cd backend
+npm install
+```
+Next, rename the `.env.example` file to `.env` and insert your Gemini API Key:
+```env
+PORT=3001
+DATABASE_URL="file:./dev.db"
+GEMINI_API_KEY="your_actual_api_key_here"
+```
+Start the backend server:
+```bash
+npm run dev
+```
+*(The backend will now be listening on http://localhost:3001)*
+
+### Step 2: Start the Frontend (User Interface)
+Open a **second, separate terminal** and run the following commands:
+```bash
+cd frontend
+npm install
+```
+Rename the `.env.example` file to `.env`. It is already configured to point to your local backend:
+```env
+VITE_API_URL="http://localhost:3001/api"
+```
+Start the frontend interface:
+```bash
+npm run dev
+```
+*(The frontend will now be running on http://localhost:5173 or 5174)*
+
+**You can now open your browser to the frontend URL and interact with the stadium map!**
+
+---
+
+## 🔒 Security & Contribution
+- Please review our [SECURITY.md](SECURITY.md) for vulnerability reporting.
+- Please review our [CONTRIBUTING.md](CONTRIBUTING.md) if you wish to fork and add features.
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
