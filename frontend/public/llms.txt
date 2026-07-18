@@ -1,0 +1,11 @@
+# StadiumPilot AI Agentic API
+
+This file provides context for LLMs to understand the site.
+
+## Endpoints
+- /api/stadium: Get live stadium conditions.
+- /api/digest: Get predictive AI operations digest.
+- /api/route: Post start/destination to get optimal paths.
+
+[Frontend Source](https://github.com/example/stadiumpilot-frontend)
+[Backend Source](https://github.com/example/stadiumpilot-backend)
