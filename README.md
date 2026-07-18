@@ -1,7 +1,7 @@
 # StadiumPilot AI 🏟️🤖
 
 <div align="center">
-  <img src="./frontend/src/assets/hero.png" alt="StadiumPilot Hero" width="100%" style="border-radius: 12px; margin-bottom: 20px;"/>
+  <img src="https://placehold.co/1200x300/1e1e2f/9333ea/png?text=StadiumPilot+AI" alt="StadiumPilot Hero" width="100%" style="border-radius: 12px; margin-bottom: 20px;"/>
   <br/>
   <h3>An intelligent, AI-powered copilot for modern stadium operations and fan experience.</h3>
 </div>
