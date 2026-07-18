@@ -1,7 +1,7 @@
 # StadiumPilot AI 🏟️🤖
 
 <div align="center">
-  <img src="https://images.unsplash.com/photo-1577223625816-75b6f092301f?q=80&w=1200&h=300&fit=crop" alt="Stadium Banner" style="border-radius: 12px; margin-bottom: 20px;"/>
+  <img src="./frontend/src/assets/hero.png" alt="StadiumPilot Hero" width="100%" style="border-radius: 12px; margin-bottom: 20px;"/>
   <br/>
   <h3>An intelligent, AI-powered copilot for modern stadium operations and fan experience.</h3>
 </div>
