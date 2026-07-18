@@ -434,7 +434,7 @@ export default function App() {
                        <div className="relative z-10">
                          <span className="text-[10px] text-[#00E5FF] font-bold uppercase tracking-widest block mb-2">Recommendations</span>
                          <ul className="space-y-2">
-                           {(digest.recommendations || []).map((rec, i) => (
+                           {(digest.recommendations || []).map((rec) => (
                              <li key={rec} className="flex gap-2 text-sm text-slate-200">
                                <span className="text-[#CCFF00]">•</span> {rec}
                              </li>
@@ -794,7 +794,7 @@ export default function App() {
 
              {/* Dynamic Amenities Overlays */}
              <AnimatePresence>
-               {amenitiesData.map((amenity, idx) => {
+               {amenitiesData.map((amenity) => {
                  const isVisible = 
                    (amenity.type === 'food' && showFood) || 
                    (amenity.type === 'medical' && showMedical) || 
