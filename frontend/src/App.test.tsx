@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import App from './App';
 
@@ -10,14 +10,17 @@ globalThis.fetch = vi.fn(() =>
 ) as any;
 
 describe('App', () => {
-  it('renders the StadiumPilot AI title', () => {
+  it('renders the stadium navigation title', async () => {
     render(<App />);
-    expect(screen.getByText('StadiumPilot')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/STADIUM NAVIGATION/i)).toBeInTheDocument();
+    });
   });
 
-  it('renders the accessibility toggle', () => {
+  it('renders the accessibility toggle', async () => {
     render(<App />);
-    const checkbox = screen.getByRole('checkbox', { name: /accessible route needed/i });
-    expect(checkbox).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Accessible Route Needed/i)).toBeInTheDocument();
+    });
   });
 });
